@@ -11,6 +11,7 @@ class LoginUseCase:
     def execute(self, domain: LoginDomain):
         username = domain.user
         password = domain.password
+        # Check if the user is registered
         user_registration = UserRegistration.objects.filter(
             user=username).first()
         if not user_registration:
@@ -19,6 +20,7 @@ class LoginUseCase:
             return Response(
                 data=error_message,
                 status='400', content_type='application/json')
+        # Check the password
         if user_registration.password != password:
             error_message = {
                 "error_message": "Incorrect password"}
@@ -29,10 +31,14 @@ class LoginUseCase:
         if not user:
             User.objects.create(username=username, password=password)
             user = User.objects.filter(username=username).first()
+        # if the user is registered, the token is deleted
+        # and a new token is assigned.
         token = Token.objects.filter(user=user).first()
         if token:
             token.delete()
+        # Creation of the new token
         new_token = Token.objects.create(user=user)
+        # Assignment of the new token
         try:
             get_user_instance = UserRegistration.objects.get(
                 user=user)

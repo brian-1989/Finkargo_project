@@ -19,6 +19,7 @@ class GetAllRegisteredUsers:
 
 class CreateUserUseCase:
     def execute(self, domain: CreateUserDomain):
+        # Check if the user is registered
         check_user = UserRegistration.objects.filter(user=domain.user)
         if list(check_user) != []:
             error_message = {
@@ -28,6 +29,7 @@ class CreateUserUseCase:
                 status=400,
                 content_type="application/json"
             )
+        # Create user registration
         date = datetime.now(tz=pytz.timezone('America/Bogota')
                             ).strftime("%Y/%m/%d, %H:%M:%S")  # "%m/%d/%Y"
         domain.create_date = date.split(',')[0]
@@ -38,6 +40,7 @@ class CreateUserUseCase:
 
 class UpdateUserUseCase:
     def execute(self, domain: UpdateUserDomain):
+        # Check if the user is registered
         check_user = UserRegistration.objects.filter(user=domain.user).first()
         if not check_user:
             error_message = {
@@ -47,6 +50,7 @@ class UpdateUserUseCase:
                 status=400,
                 content_type="application/json"
             )
+        # Update user registration
         if domain.field == 'user':
             check_user.user = domain.value
         elif domain.field == 'password':
@@ -67,6 +71,7 @@ class UpdateUserUseCase:
 
 class DeleteUserUseCase:
     def execute(self, domain: DeleteUserDomain):
+        # Check if the user is registered
         check_user = UserRegistration.objects.filter(user=domain.user).first()
         if not check_user:
             error_message = {
@@ -76,6 +81,7 @@ class DeleteUserUseCase:
                 status=400,
                 content_type="application/json"
             )
+        # Delete user registration
         check_user.delete()
         message = {
             "message": f"The {domain.user} user was deleted"}
@@ -91,6 +97,7 @@ class GetAllUserDataUseCase:
 
 class CreateUserDataUseCase:
     def execute(self, domain: CreateUserDataDomain):
+        # Check if the user is registered
         check_user_registration = UserRegistration.objects.filter(
             user=domain.user).first()
         if not check_user_registration:
@@ -102,6 +109,7 @@ class CreateUserDataUseCase:
                 content_type="application/json"
             )
         id_user_registration = check_user_registration.id
+        # checks whether the user's data is registered
         check_user_data = UserData.objects.filter(
             registered_user=id_user_registration).first()
         if check_user_data:
@@ -112,6 +120,7 @@ class CreateUserDataUseCase:
                 status=400,
                 content_type="application/json"
             )
+        # Create user data
         get_user_instance = UserRegistration.objects.get(user=domain.user)
         domain.registered_user = get_user_instance
         domain.__dict__.pop('user')
@@ -122,6 +131,7 @@ class CreateUserDataUseCase:
 
 class UpdateUserDataUseCase:
     def execute(self, domain: UpdateUserDomain):
+        # Check if the user is registered
         check_user_registration = UserRegistration.objects.filter(
             user=domain.user).first()
         if not check_user_registration:
@@ -133,6 +143,7 @@ class UpdateUserDataUseCase:
                 content_type="application/json"
             )
         id_user_registration = check_user_registration.id
+        # checks whether the user's data is registered
         check_user_data = UserData.objects.filter(
             registered_user=id_user_registration).first()
         if not check_user_data:
@@ -143,6 +154,7 @@ class UpdateUserDataUseCase:
                 status=400,
                 content_type="application/json"
             )
+        # Update user data
         if domain.field == 'name':
             check_user_data.name = domain.value
         elif domain.field == 'last_name':
@@ -167,6 +179,7 @@ class UpdateUserDataUseCase:
 
 class DeleteUserDataUseCase:
     def execute(self, domain: DeleteUserDomain):
+        # Check if the user is registered
         check_user_registration = UserRegistration.objects.filter(
             user=domain.user).first()
         if not check_user_registration:
@@ -178,6 +191,7 @@ class DeleteUserDataUseCase:
                 content_type="application/json"
             )
         id_user_registration = check_user_registration.id
+        # checks whether the user's data is registered
         check_user_data = UserData.objects.filter(
             registered_user=id_user_registration).first()
         if not check_user_data:
@@ -188,6 +202,7 @@ class DeleteUserDataUseCase:
                 status=400,
                 content_type="application/json"
             )
+        # Delete user data
         check_user_data.delete()
         message = {
             "message": f"{domain.user}'s user data was deleted"}

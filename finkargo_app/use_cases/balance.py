@@ -4,10 +4,12 @@ from rest_framework.views import Response
 
 class BalanceUseCase:
     def execute(self, domain: BalanceDomain):
+        # List with the months of the year.
         year_month = [
             'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
             'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ]
+        # Verify that the names in the list of months are correct.
         for check_mmonth in domain.months:
             if check_mmonth not in year_month:
                 error_message = {
@@ -17,6 +19,7 @@ class BalanceUseCase:
                     status=400,
                     content_type="application/json"
                 )
+        # To make the balance sheet of each month
         balance_list = [
             {"month": month,
              "sales": domain.sales[domain.months.index(month)],
